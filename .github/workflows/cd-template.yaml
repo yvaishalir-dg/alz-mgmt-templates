@@ -138,10 +138,4 @@ jobs:
           -input=false \
           -auto-approve \
           tfplan
-
-      - name: Show Platform Outputs
-        run: |
-          terraform output hub_virtual_network_resource_id
-          terraform output firewall_private_ip_address
-          terraform output private_dns_zone_resource_ids
-        working-directory: ./platform/default
+          
