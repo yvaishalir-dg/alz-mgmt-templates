@@ -63,6 +63,7 @@ jobs:
           terraform \
           -chdir=${{ inputs.root_module_folder_relative_path || '.' }} \
           plan \
+          -parallelism=1 \
           -out=tfplan \
           -input=false \
           ${{ inputs.terraform_action == 'destroy' && '-destroy' || '' }}
@@ -139,6 +140,7 @@ jobs:
           terraform \
           -chdir=${{ inputs.root_module_folder_relative_path || '.' }} \
           apply \
+          -parallelism=1 \
           -input=false \
           -auto-approve \
           tfplan
