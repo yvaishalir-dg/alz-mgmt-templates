@@ -42,6 +42,12 @@ jobs:
           init \
           -backend=false
 
+      - name: Force Unlock Terraform State
+        run: |
+          terraform \
+          -chdir="${{inputs.root_module_folder_relative_path}}" \
+          force-unlock -force ${{ secrets.TF_STATE_LOCK_ID }}
+
       - name: Terraform Validate
         run: |
           terraform \
