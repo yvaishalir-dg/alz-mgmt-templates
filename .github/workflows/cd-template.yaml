@@ -56,28 +56,13 @@ jobs:
           -backend-config="storage_account_name=${{vars.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" \
           -backend-config="container_name=${{vars.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}" \
           -backend-config="key=${{ inputs.state_file_path }}"
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           
-      - name: Break Terraform state lease
-        run: |
-          az storage blob lease break \
-            --account-name ${{ vars.BACKEND_AZURE_STORAGE_ACCOUNT_NAME }} \
-            --container-name ${{ vars.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME }} \
-            --blob-name ${{ inputs.state_file_path }} \
-            --auth-mode login
-
       - name: Terraform Plan for ${{ inputs.terraform_action == 'destroy' && 'Destroy' || 'Apply' }}
         run: |
           # shellcheck disable=SC2086
           terraform \
           -chdir=${{ inputs.root_module_folder_relative_path || '.' }} \
           plan \
-          # -parallelism=1 \
           -out=tfplan \
           -input=false \
           ${{ inputs.terraform_action == 'destroy' && '-destroy' || '' }}
@@ -154,7 +139,6 @@ jobs:
           terraform \
           -chdir=${{ inputs.root_module_folder_relative_path || '.' }} \
           apply \
-          # -parallelism=1 \
           -input=false \
           -auto-approve \
           tfplan
