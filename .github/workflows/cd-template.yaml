@@ -57,11 +57,13 @@ jobs:
           -backend-config="container_name=${{vars.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}" \
           -backend-config="key=${{ inputs.state_file_path }}"
           
-      - name: Force Unlock Terraform State
+      - name: Break Terraform state lease
         run: |
-          terraform \
-          -chdir="${{inputs.root_module_folder_relative_path}}" \
-          force-unlock -force ${{ secrets.TF_STATE_LOCK_ID }}
+          az storage blob lease break \
+            --account-name ${{ vars.BACKEND_AZURE_STORAGE_ACCOUNT_NAME }} \
+            --container-name ${{ vars.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME }} \
+            --blob-name ${{ inputs.state_file_path }} \
+            --auth-mode login
 
       - name: Terraform Plan for ${{ inputs.terraform_action == 'destroy' && 'Destroy' || 'Apply' }}
         run: |
