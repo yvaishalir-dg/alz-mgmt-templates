@@ -89,12 +89,6 @@ jobs:
           -backend-config="container_name=${{vars.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}" \
           -backend-config="key=terraform.tfstate"
 
-      - name: Force Unlock Terraform State
-        run: |
-          terraform \
-          -chdir="${{inputs.root_module_folder_relative_path}}" \
-          force-unlock -force ${{ secrets.TF_STATE_LOCK_ID }}
-
       - name: Terraform Plan
         id: plan
         run: |
